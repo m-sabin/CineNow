@@ -5,5 +5,5 @@ import retrofit2.http.GET
 
 interface ApiService {
     @GET("top_rated?language=en-US&page=1")
-    fun getTopRatedMovies() : Call<List<Unit>>
+    fun getTopRatedMovies() : Call<MovieResponse>
 }

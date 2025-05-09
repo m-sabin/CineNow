@@ -19,8 +19,7 @@ class MainActivity : ComponentActivity() {
             CineNowTheme {
                 val apiService = RetrofitClient.retrofitInstance.create(ApiService::class.java)
                 apiService.getTopRatedMovies()
-
-
+                
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
