@@ -144,7 +144,7 @@ fun MovieListScreen(navController: NavHostController) {
     MovieListContent(
         topRatedMovies, nowPlayingMovies, popularMovies, upcomingMovies,
     ) { movieClicked ->
-        navController.navigate(route = "movieDetail")
+        navController.navigate(route = "movieDetail/${movieClicked.id}")
     }
 }
 
