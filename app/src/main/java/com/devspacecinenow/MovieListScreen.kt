@@ -27,13 +27,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun MovieListScreen(){
+fun MovieListScreen(navController: NavHostController) {
+
 
     var topRatedMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
     var nowPlayingMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
@@ -68,14 +70,14 @@ fun MovieListScreen(){
     })
 
     val callNowPlaying = apiService.getNowPlayingMovies()
-    callNowPlaying.enqueue(object : Callback<MovieResponse>{
+    callNowPlaying.enqueue(object : Callback<MovieResponse> {
         override fun onResponse(
             call: Call<MovieResponse?>,
             response: Response<MovieResponse?>
         ) {
-            if (response.isSuccessful){
+            if (response.isSuccessful) {
                 val movies = response.body()?.results
-                if (movies != null){
+                if (movies != null) {
                     nowPlayingMovies = movies
                 }
             } else {
@@ -92,14 +94,14 @@ fun MovieListScreen(){
     })
 
     val callPopularMovies = apiService.getPopularMovies()
-    callPopularMovies.enqueue(object : Callback<MovieResponse>{
+    callPopularMovies.enqueue(object : Callback<MovieResponse> {
         override fun onResponse(
             call: Call<MovieResponse?>,
             response: Response<MovieResponse?>
         ) {
-            if (response.isSuccessful){
+            if (response.isSuccessful) {
                 val movies = response.body()?.results
-                if (movies != null){
+                if (movies != null) {
                     popularMovies = movies
                 }
             } else {
@@ -116,14 +118,14 @@ fun MovieListScreen(){
     })
 
     val callUpcomingMovies = apiService.getUpcomingMovies()
-    callUpcomingMovies.enqueue(object : Callback<MovieResponse>{
+    callUpcomingMovies.enqueue(object : Callback<MovieResponse> {
         override fun onResponse(
             call: Call<MovieResponse?>,
             response: Response<MovieResponse?>
         ) {
-            if (response.isSuccessful){
+            if (response.isSuccessful) {
                 val movies = response.body()?.results
-                if(movies != null){
+                if (movies != null) {
                     upcomingMovies = movies
                 }
             } else {
@@ -141,8 +143,8 @@ fun MovieListScreen(){
 
     MovieListContent(
         topRatedMovies, nowPlayingMovies, popularMovies, upcomingMovies,
-    ) {movieClicked ->
-
+    ) { movieClicked ->
+        navController.navigate(route = "movieDetail")
     }
 }
 
@@ -153,40 +155,40 @@ private fun MovieListContent(
     popularMovies: List<MovieDto>,
     upcomingMovies: List<MovieDto>,
     onClick: (MovieDto) -> Unit
-){
+) {
     Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            Text(
-                modifier = Modifier.padding(8.dp),
-                text = "CineNow",
-                fontWeight = FontWeight.Bold,
-                fontSize = 40.sp
-            )
-            MovieSession(
-                label = "Top Rated",
-                movieList = topRatedMovies,
-                onClick = { movieClicked -> }
-            )
-            MovieSession(
-                label = "Now Playing",
-                movieList = nowPlayingMovies,
-                onClick = {movieClicked -> }
-            )
-            MovieSession(
-                label = "Popular",
-                movieList = popularMovies,
-                onClick = {movieClicked -> }
-            )
-            MovieSession(
-                label = "Upcoming",
-                movieList = upcomingMovies,
-                onClick = {movieClicked -> }
-            )
-        }
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        Text(
+            modifier = Modifier.padding(8.dp),
+            text = "CineNow",
+            fontWeight = FontWeight.Bold,
+            fontSize = 40.sp
+        )
+        MovieSession(
+            label = "Top Rated",
+            movieList = topRatedMovies,
+            onClick = onClick
+        )
+        MovieSession(
+            label = "Now Playing",
+            movieList = nowPlayingMovies,
+            onClick = onClick
+        )
+        MovieSession(
+            label = "Popular",
+            movieList = popularMovies,
+            onClick = onClick
+        )
+        MovieSession(
+            label = "Upcoming",
+            movieList = upcomingMovies,
+            onClick = onClick
+        )
     }
+}
 
 
 @Composable
@@ -215,7 +217,7 @@ private fun MovieList(
     movieList: List<MovieDto>,
     onClick: (MovieDto) -> Unit
 ) {
-    LazyRow{
+    LazyRow {
         items(movieList) {
             MovieItem(
                 movieDto = it,
