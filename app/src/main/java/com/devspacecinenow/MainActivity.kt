@@ -46,6 +46,8 @@ class MainActivity : ComponentActivity() {
 
                 var topRatedMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
                 var nowPlayingMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
+                var popularMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
+                var upcomingMovies by remember { mutableStateOf<List<MovieDto>>(emptyList()) }
 
 
                 val callTopRated = apiService.getTopRatedMovies()
@@ -97,6 +99,54 @@ class MainActivity : ComponentActivity() {
                     }
                 })
 
+                val callPopularMovies = apiService.getPopularMovies()
+                callPopularMovies.enqueue(object : Callback<MovieResponse>{
+                    override fun onResponse(
+                        call: Call<MovieResponse?>,
+                        response: Response<MovieResponse?>
+                    ) {
+                        if (response.isSuccessful){
+                            val movies = response.body()?.results
+                            if (movies != null){
+                                popularMovies = movies
+                            }
+                        } else {
+                            Log.d("Main Activity", "error :: ${response.errorBody()}")
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<MovieResponse?>,
+                        t: Throwable
+                    ) {
+                        Log.d("Main Activity", "Network error ${t.message}")
+                    }
+                })
+
+                val callUpcomingMovies = apiService.getUpcomingMovies()
+                callUpcomingMovies.enqueue(object : Callback<MovieResponse>{
+                    override fun onResponse(
+                        call: Call<MovieResponse?>,
+                        response: Response<MovieResponse?>
+                    ) {
+                       if (response.isSuccessful){
+                           val movies = response.body()?.results
+                           if(movies != null){
+                               upcomingMovies = movies
+                           }
+                       } else {
+                           Log.d("Main Activity", "error :: ${response.errorBody()}")
+                       }
+                    }
+
+                    override fun onFailure(
+                        call: Call<MovieResponse?>,
+                        t: Throwable
+                    ) {
+                        Log.d("Main Activity", "Network error ${t.message}")
+                    }
+                })
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -123,8 +173,17 @@ class MainActivity : ComponentActivity() {
                             movieList = nowPlayingMovies,
                             onClick = {movieClicked -> }
                         )
+                        MovieSession(
+                            label = "Popular",
+                            movieList = popularMovies,
+                            onClick = {movieClicked -> }
+                        )
+                        MovieSession(
+                            label = "Upcoming",
+                            movieList = upcomingMovies,
+                            onClick = {movieClicked -> }
+                        )
                     }
-
                 }
             }
         }
